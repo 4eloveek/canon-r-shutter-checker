@@ -165,6 +165,9 @@ For an unknown model, verify the field on at least two consecutive
 frames, preferably one mechanical and one electronic exposure, before
 trusting it.
 
+Have an unverified model such as the R7 or R100? See
+[SUPPORT.md](SUPPORT.md) for how to share test files and open a request.
+
 ### Limitations
 
 - **R10 firmware 1.5.0 only.** A firmware update may change the layout.
@@ -362,6 +365,10 @@ ExifTool находит блок метаданных R10 и в подробно
 Для неизвестной модели проверяйте поле как минимум на двух соседних
 кадрах, желательно один механический и один электронный, прежде чем
 доверять результату.
+
+Есть непроверенная модель, например R7 или R100? См.
+[SUPPORT.md](SUPPORT.md): там описано, как передать тестовые файлы и
+открыть запрос.
 
 ### Ограничения
 
