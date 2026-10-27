@@ -1,1 +1,72 @@
+name: Model test request
+description: Share sample files to help verify the shutter counter on another Canon model
+title: "[Model test] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping! Please read `SUPPORT.md` in the repository before submitting.
 
+        Do not upload personal photos. Test frames of a wall or desk are enough.
+        Camera files contain EXIF metadata, including the camera serial number.
+
+  - type: input
+    id: model
+    attributes:
+      label: Camera model
+      placeholder: Canon EOS R7
+    validations:
+      required: true
+
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      placeholder: 1.5.0
+    validations:
+      required: true
+
+  - type: input
+    id: files
+    attributes:
+      label: Sample files
+      description: Link to 3-5 original CR3/JPEG files, or attach them if they are small enough. Do not edit or convert them.
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: shutter
+    attributes:
+      label: Shutter modes used
+      multiple: true
+      options:
+        - Mechanical
+        - Electronic
+        - Mixed / not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: order
+    attributes:
+      label: Frame order and notes
+      description: List the files in shooting order, note which shutter mode was used, and mention any card formatting or file-number reset.
+      placeholder: |
+        IMG_0001.CR3 - mechanical
+        IMG_0002.CR3 - mechanical
+        IMG_0003.CR3 - electronic
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Confirmation
+      options:
+        - label: These are original, unmodified files from the camera.
+          required: true
+        - label: I understand that attached files are public and contain EXIF metadata.
+          required: true
+        - label: I allow these files to be analyzed to verify the counter format.
+          required: true
