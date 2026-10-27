@@ -10,7 +10,7 @@
 Read the total frame/shutter counter from a Canon EOS R10 **CR3 or JPEG**
 file. The camera does not need to be connected.
 
-> **Narrow tool.** It is tested only on the **EOS R10, firmware 1.5.0**.
+> **Narrow tool.** It is tested only on the **EOS R10, firmware 1.5.0 and 1.7.0**.
 > Do not trust the output for other camera models without verifying the
 > field yourself.
 
@@ -170,7 +170,6 @@ Have an unverified model such as the R7 or R100? See
 
 ### Limitations
 
-- **R10 firmware 1.5.0 only.** A firmware update may change the layout.
 - The field is 16-bit. Behaviour after 65535 is not verified.
 - The value is the count **at the moment the frame was taken**. To get
   the current count, read the newest file or take a new frame.
@@ -209,7 +208,7 @@ Not affiliated with Canon.
 Читает общий счётчик кадров/затвора из файла Canon EOS R10 **CR3 или
 JPEG**. Камеру подключать не нужно.
 
-> **Узкий инструмент.** Проверен только на **EOS R10, прошивка 1.5.0**.
+> **Узкий инструмент.** Проверен только на **EOS R10, прошивка 1.5.0 и 1.7.0**.
 > Не доверяйте результату для других моделей без самостоятельной
 > проверки поля.
 
@@ -372,8 +371,6 @@ ExifTool находит блок метаданных R10 и в подробно
 
 ### Ограничения
 
-- **Только R10, прошивка 1.5.0.** Обновление прошивки может изменить
-  раскладку.
 - Поле 16-битное. Поведение после 65535 не проверено.
 - Значение — счётчик **на момент съёмки кадра**. Чтобы узнать текущее
   значение, читайте самый свежий файл или снимайте новый кадр.
