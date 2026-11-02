@@ -16,3 +16,5 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl
       - name: Run tests
         run: python -m unittest discover -s tests -v
+      - name: Check CLI
+        run: python canon_r_shutter_count.py --version
