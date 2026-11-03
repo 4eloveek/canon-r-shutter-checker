@@ -16,7 +16,7 @@ metadata block, then validates and reads the model-specific field directly.
 | Camera | Firmware | Verified files | Counter field | Status |
 |---|---|---|---|---|
 | EOS R7 | 1.8.0 | CR3 | `bb cc` block + `0x0c93` | verified |
-| EOS R7 | 1.6.0 | JPEG | `bb cc` block + `0x0c93` | unverified; composite sentinel observed |
+| EOS R7 | 1.6.0 | JPEG | `bb cc` block + `0x0c93` | verified (community report) |
 | EOS R10 | 1.5.0 | CR3, JPEG | `bb cc` block + `0x0c93` | verified |
 | EOS R10 | 1.7.0 | CR3 | `bb cc` block + `0x0c93` | verified |
 | EOS R10 | 1.8.0 | JPEG | `bb cc` block + `0x0c93` | verified (community report) |
@@ -198,10 +198,20 @@ both shutter modes:
 The filename reset from 1300 to 0001 while the metadata counter continued by
 one. Electronic and mechanical frames incremented the same field.
 
+R7 firmware 1.6.0 JPEG was verified with community samples from
+[@ofnuts](https://github.com/ofnuts): `1K0A4191` and `1K0A4192` were directly
+consecutive frames containing 4493 and 4494. Two panorama test sessions on the
+same camera advanced the counter by exactly +15 each while producing a single
+output file, matching the number of audible shutter actuations. This confirms
+that the field counts exposures, not saved files, on R7 JPEG as well.
+
 An in-camera focus-stacking composite JPEG from firmware 1.6.0 retained the
 normal 4608-byte `bb cc` block but stored `0` at `0x0c93`. Panorama composites
-were also reported with `65535`. These are treated as unavailable sentinels,
-not as real shutter counts. Use a nearby ordinary frame for the current value.
+use a completely different 16896-byte CameraInfo block, and reading `0x0c93`
+inside it produces meaningless values (for example 11, 131 or 65520) rather
+than a counter. The CLI rejects both cases: the panorama layout by size and
+the focus-stack sentinel by value. Use a nearby ordinary frame for the current
+count.
 
 #### EOS R10
 
@@ -340,7 +350,7 @@ CameraInfo; затем скрипт проверяет структуру и ч�
 | Камера | Прошивка | Проверенные файлы | Поле счётчика | Статус |
 |---|---|---|---|---|
 | EOS R7 | 1.8.0 | CR3 | блок `bb cc` + `0x0c93` | проверено |
-| EOS R7 | 1.6.0 | JPEG | блок `bb cc` + `0x0c93` | не проверено; найден composite-маркер |
+| EOS R7 | 1.6.0 | JPEG | блок `bb cc` + `0x0c93` | проверено (отчёт пользователя) |
 | EOS R10 | 1.5.0 | CR3, JPEG | блок `bb cc` + `0x0c93` | проверено |
 | EOS R10 | 1.7.0 | CR3 | блок `bb cc` + `0x0c93` | проверено |
 | EOS R10 | 1.8.0 | JPEG | блок `bb cc` + `0x0c93` | проверено (отчёт пользователя) |
@@ -524,10 +534,19 @@ ExifTool **не выдаёт используемое здесь значени�
 Имя сбросилось с 1300 на 0001, а счётчик продолжился на единицу. Электронные
 и механические кадры увеличили одно и то же поле.
 
+JPEG с R7 на прошивке 1.6.0 подтверждены образцами
+[@ofnuts](https://github.com/ofnuts): `1K0A4191` и `1K0A4192` — непосредственно
+соседние кадры со значениями 4493 и 4494. Две панорамные сессии на той же камере
+давали ровно +15 при создании одного итогового файла, что совпало с числом
+слышимых срабатываний затвора. Это подтверждает, что поле считает экспозиции,
+а не сохранённые файлы, и в JPEG с R7.
+
 Составной JPEG после focus stacking на прошивке 1.6.0 сохранил обычный блок
-`bb cc` размером 4608 байт, но записал `0` по `0x0c93`. Для панорам также
-сообщалось значение `65535`. Это служебные маркеры отсутствующего счётчика,
-а не пробег камеры. Текущее значение следует брать из соседнего обычного кадра.
+`bb cc` размером 4608 байт, но записал `0` по `0x0c93`. Панорамы используют
+совершенно другой блок CameraInfo размером 16896 байт, и чтение `0x0c93` внутри
+него даёт бессмысленные значения (например, 11, 131 или 65520), а не счётчик.
+CLI отклоняет оба случая: панорамную раскладку по размеру, а focus-stack-маркер
+по значению. Текущее значение следует брать из соседнего обычного кадра.
 
 #### EOS R10
 

@@ -8,7 +8,7 @@ This document describes the model-specific metadata fields used by
 | Camera | Firmware | File type | Block prefix | Offset | Status |
 |---|---|---|---|---:|---|
 | EOS R7 | 1.8.0 | CR3 | `bb cc` | `0x0c93` | verified |
-| EOS R7 | 1.6.0 | JPEG | `bb cc` | `0x0c93` | unverified; composite sentinel observed |
+| EOS R7 | 1.6.0 | JPEG | `bb cc` | `0x0c93` | verified (community report) |
 | EOS R10 | 1.5.0 | CR3/JPEG | `bb cc` | `0x0c93` | verified |
 | EOS R10 | 1.7.0 | CR3 | `bb cc` | `0x0c93` | verified |
 | EOS R10 | 1.8.0 | JPEG | `bb cc` | `0x0c93` | verified (community report) |
@@ -109,17 +109,41 @@ metadata value continued by one, proving that the field is independent of the
 current filename sequence. Fully electronic and mechanical frames incremented
 the same total counter.
 
-### Composite JPEG sentinel
+### R7 1.6.0 JPEG evidence
 
-An EOS R7 firmware 1.6.0 in-camera focus-stacking composite
-(`1K0A4186.JPG`) contains the normal 4608-byte `bb cc` block but stores
-`00 00 00 00` at `0x0c93`. The next ordinary image was reported with a normal
-counter of 4493. Panorama composites were also reported to store 65535.
+Community samples from @ofnuts verified R7 firmware 1.6.0 JPEG:
 
-The CLI treats `0`, `65535` and `0xffffffff` as unavailable special-mode
-sentinels. It returns an error instead of presenting them as a shutter count.
-This is intentionally conservative: a genuine camera count exactly equal to a
-sentinel cannot currently be distinguished from a special-mode output file.
+| File | Event | Counter |
+|---|---|---:|
+| `1K0A4191.JPG` | ordinary frame | 4493 |
+| `1K0A4192.JPG` | directly consecutive frame | 4494 |
+| `1K0A6084.JPG` | single shot before panorama | 36079 |
+| `1K0A6085.JPG` | panorama composite | rejected (16896-byte layout) |
+| `1K0A6086.JPG` | single shot after panorama | 36094 |
+| `1K0A6090.JPG` | single shot before panorama | 36110 |
+| `1K0A6091.JPG` | panorama composite | rejected (16896-byte layout) |
+| `1K0A6092.JPG` | single shot after panorama | 36125 |
+
+Both panorama sessions advanced the counter by exactly +15 while producing a
+single output file, matching the number of audible shutter actuations. This
+confirms that the field counts exposures rather than saved files.
+
+### Composite outputs
+
+There are two distinct composite cases on the R7:
+
+1. **Focus stacking** (`1K0A4186.JPG`): keeps the normal 4608-byte `bb cc`
+   block but stores `00 00 00 00` at `0x0c93`.
+2. **Panorama** (`1K0A6085.JPG`, `1K0A6091.JPG`): uses a completely different
+   16896-byte CameraInfo block. Reading `0x0c93` inside it produces unrelated
+   values such as 11, 131 or 65520 - these are layout artifacts, not counters
+   and not sentinels.
+
+The CLI rejects panorama files by block size during layout validation, and
+treats `0`, `65535` and `0xffffffff` in a valid layout as unavailable
+special-mode sentinels. This is intentionally conservative: a genuine camera
+count exactly equal to a sentinel cannot currently be distinguished from a
+special-mode output file.
 
 Composite files may combine several source exposures while storing no usable
 counter in the final JPEG. Read the newest nearby ordinary frame instead.

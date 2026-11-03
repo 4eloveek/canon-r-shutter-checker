@@ -14,7 +14,8 @@ GitHub has no private messages. Please use a public issue:
 ### Currently supported
 
 - EOS R7 firmware 1.8.0: CR3
-- EOS R7 JPEG with matching layout: accepted as unverified; composite outputs may have no counter
+- EOS R7 firmware 1.6.0: JPEG (community-confirmed)
+- EOS R7 JPEG with matching layout: accepted as unverified; composite outputs are rejected
 - EOS R10 firmware 1.5.0: CR3/JPEG
 - EOS R10 firmware 1.7.0: CR3
 - EOS R10 firmware 1.8.0: JPEG (community-confirmed)
@@ -74,7 +75,8 @@ model, firmware, file format and metadata layout are sufficiently constrained.
 ### Сейчас поддерживаются
 
 - EOS R7, прошивка 1.8.0: CR3
-- EOS R7 JPEG с совпадающей раскладкой: принимается как unverified; в composite-файле счётчика может не быть
+- EOS R7, прошивка 1.6.0: JPEG (подтверждено пользователем)
+- EOS R7 JPEG с совпадающей раскладкой: принимается как unverified; composite-файлы отклоняются
 - EOS R10, прошивка 1.5.0: CR3/JPEG
 - EOS R10, прошивка 1.7.0: CR3
 - EOS R10, прошивка 1.8.0: JPEG (подтверждено пользователем)

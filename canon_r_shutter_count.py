@@ -8,6 +8,7 @@ verified binary layout still matches, but their result is marked unverified.
 
 Verified combinations:
 - EOS R7 firmware 1.8.0: CR3, offset 0x0c93
+- EOS R7 firmware 1.6.0: JPEG, offset 0x0c93
 - EOS R10 firmware 1.5.0: CR3/JPEG; 1.7.0: CR3; 1.8.0: JPEG,
   offset 0x0c93
 - EOS R100 firmware 1.0.0: JPEG/CR3, preliminary offset 0x0acf
@@ -53,7 +54,9 @@ class Reading:
 
 CAMERAS = {
     "Canon EOS R7": CameraSpec(
-        verified_combinations=frozenset({("1.8.0", "CR3")}),
+        verified_combinations=frozenset(
+            {("1.8.0", "CR3"), ("1.6.0", "JPEG")}
+        ),
         file_types=frozenset({"CR3", "JPEG"}),
         block_prefix=b"\xbb\xcc",
         counter_offset=0x0C93,

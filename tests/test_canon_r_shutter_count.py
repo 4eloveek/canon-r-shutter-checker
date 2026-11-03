@@ -113,6 +113,7 @@ class ExtractionTest(unittest.TestCase):
     def test_supported_model_layouts(self):
         cases = [
             ("Canon EOS R7", "1.8.0", "CR3", b"\xbb\xcc", 0x0C93, 18694),
+            ("Canon EOS R7", "1.6.0", "JPEG", b"\xbb\xcc", 0x0C93, 4493),
             ("Canon EOS R10", "1.5.0", "JPEG", b"\xbb\xcc", 0x0C93, 19140),
             ("Canon EOS R10", "1.7.0", "CR3", b"\xbb\xcc", 0x0C93, 31671),
             ("Canon EOS R10", "1.8.0", "JPEG", b"\xbb\xcc", 0x0C93, 1210),
@@ -170,6 +171,23 @@ class ExtractionTest(unittest.TestCase):
             result = reader.inspect_file(path, exiftool)
             self.assertEqual(result.shutter_count, 4493)
             self.assertEqual(result.status, "unverified")
+
+    def test_panorama_layout_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path, exiftool = self.make_fixture(
+                tmp,
+                model="Canon EOS R7",
+                firmware="1.6.0",
+                file_type="JPEG",
+                prefix=b"\xbb\xcc",
+                offset=0x0C93,
+                value=4493,
+                block_size=16896,
+            )
+            with self.assertRaisesRegex(
+                RuntimeError, "expected 4608 bytes"
+            ):
+                reader.inspect_file(path, exiftool)
 
     def test_special_mode_sentinels_are_rejected(self):
         for sentinel in (0, 0xFFFF, 0xFFFFFFFF):
