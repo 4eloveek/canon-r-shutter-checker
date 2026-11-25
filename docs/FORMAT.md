@@ -1,12 +1,12 @@
 # Canon EOS R7 / R10 / R100 CameraInfo counter layouts
 
 This document describes the model-specific metadata fields used by
-`canon_r_shutter_count.py`.
+`canon_r_shutter_count.py` and the browser reader in `docs/canon-parser.js`.
 
 ## Summary
 
 | Camera | Firmware | File type | Block prefix | Offset | Status |
-|---|---|---|---|---:|---|
+|---|---|---|---|---|---|
 | EOS R7 | 1.8.0 | CR3 | `bb cc` | `0x0c93` | verified |
 | EOS R7 | 1.6.0 | JPEG | `bb cc` | `0x0c93` | verified (community report) |
 | EOS R10 | 1.5.0 | CR3/JPEG | `bb cc` | `0x0c93` | verified |
@@ -14,10 +14,11 @@ This document describes the model-specific metadata fields used by
 | EOS R10 | 1.8.0 | JPEG | `bb cc` | `0x0c93` | verified (community report) |
 | EOS R100 | 1.0.0 | JPEG/CR3 | `bb bb` | `0x0acf` | preliminary |
 
-All observed blocks are 4608 bytes (`0x1200`) and are currently reported by
-ExifTool as `CanonCameraInfoUnknown`. The absolute location of the block varies
-between files; only the offset *inside* the block is stable for a verified
-layout.
+Ordinary CameraInfo blocks are 4608 bytes (`0x1200`) and are currently
+reported by ExifTool as `CanonCameraInfoUnknown`. Panorama composites use a
+16896-byte block and are rejected instead of being read at the ordinary offset.
+The absolute location of the block varies between files; only the offset
+*inside* the block is stable for a verified layout.
 
 The firmware rows above describe direct evidence, not a hard allowlist. Other
 firmware versions are accepted for a supported model/file type when the block
@@ -55,6 +56,28 @@ unknown version is not rejected by itself. This allows compatible firmware
 updates while still making the lack of direct testing visible.
 
 This prevents using a valid offset from one CameraInfo layout on another.
+
+## Browser parser
+
+The static page uses `docs/canon-parser.js`, which applies the same field rules
+without ExifTool, Python or a camera connection:
+
+- **JPEG:** scans APP1 segments for an Exif payload, follows TIFF IFD0's
+  `0x8769` ExifIFD pointer, reads MakerNote `0x927c`, then Canon firmware
+  `0x0007` and CameraInfo `0x000d`.
+- **CR3:** reads the ISO BMFF top-level boxes, requires major brand `crx `,
+  finds the Canon UUID `85c0b687-820f-11e0-8111-f4ce462b6a48` in `moov`,
+  reads identity from `CMT1` and optional static MakerNotes from `CMT3`, then
+  locates the single `CTMD` track sample through `stsd`, `stsz`, `stsc` and
+  `stco`/`co64`. The sample starts with a 12-byte little-endian record header
+  and contains a `0x927c` sub-box with the same TIFF MakerNote structure.
+- The counter is always read as a little-endian `u32` and is validated by the
+  4608-byte block size and model prefix before the read. A 16896-byte panorama
+  block, special values, multiple samples/tracks and conflicting blocks are
+  rejected.
+
+The parser never decodes image data; it only walks container metadata. All
+samples stay in browser memory and are not uploaded.
 
 ## R7 and R10 layout
 

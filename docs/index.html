@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Canon R Shutter Checker — EOS R7 / R10 / R100</title>
+  <meta name="description" content="Офлайн-проверка счётчика кадров Canon EOS R7, R10 и R100 по оригинальному JPEG или CR3. Метаданные читаются локально в браузере.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121210" media="(prefers-color-scheme: dark)">
+  <meta property="og:title" content="Canon R Shutter Checker">
+  <meta property="og:description" content="Offline Canon EOS R7, R10 and R100 frame counter reader for original JPEG and CR3 files.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23191714'/%3E%3Ccircle cx='16' cy='16' r='8.5' fill='none' stroke='%23f7f3ea' stroke-width='2'/%3E%3Cpath d='M16 7.5v5M16 19.5v5M7.5 16h5M19.5 16h5' stroke='%23f7f3ea' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skip">Перейти к проверке файла</a>
+
+  <header class="site-header">
+    <a class="brand" href="./" data-i18n-aria="brandAria" aria-label="Canon R Shutter Checker — на главную">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <circle cx="16" cy="16" r="12.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M16 3.5v8M16 20.5v8M3.5 16h8M20.5 16h8M7.2 7.2l5.6 5.6M19.2 19.2l5.6 5.6M24.8 7.2l-5.6 5.6M12.8 19.2l-5.6 5.6" stroke="currentColor" stroke-width="1.15" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-text">Canon R <span class="brand-sub">Shutter Checker</span></span>
+    </a>
+    <div class="header-tools">
+      <span class="version" title="2.0">2.0</span>
+      <div class="lang" role="group" data-i18n-aria="langAria" aria-label="Язык интерфейса">
+        <button type="button" class="lang-button" data-lang="ru" aria-pressed="true">RU</button>
+        <button type="button" class="lang-button" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" aria-labelledby="page-title">
+      <p class="eyebrow" data-i18n="eyebrow">Локальная проверка метаданных</p>
+      <h1 id="page-title" data-i18n="title">Счётчик кадров Canon</h1>
+      <p class="lede" data-i18n="lede">Узнайте общий счётчик кадров EOS R7, R10 или R100 по оригинальному JPEG или CR3. Это общий счётчик на момент съёмки, а не только механический износ; файл читается локально и никуда не отправляется.</p>
+    </section>
+
+    <section class="checker" aria-labelledby="checker-title">
+      <h2 id="checker-title" class="sr-only" data-i18n="checkerTitle">Проверить файл</h2>
+
+      <div id="dropzone" class="dropzone" role="button" tabindex="0" aria-describedby="drop-hint" data-i18n-aria="dropAria" aria-label="Выбрать файлы JPEG или CR3 для проверки">
+        <svg class="drop-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M12 3v11m0 0 4-4m-4 4-4-4M4 16.5V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="drop-title" data-i18n="dropTitle">Перетащите файлы сюда</p>
+        <p id="drop-hint" class="drop-hint" data-i18n="dropHint">или нажмите, чтобы выбрать JPEG или CR3</p>
+      </div>
+      <input id="file-input" type="file" accept=".jpg,.jpeg,.cr3,image/jpeg" multiple hidden>
+
+      <div id="toolbar" class="toolbar" hidden>
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+        <button id="clear" class="clear-button" type="button" data-i18n="clear">Очистить</button>
+      </div>
+
+      <ul id="results" class="results" aria-label="Результаты проверки" aria-live="polite"></ul>
+    </section>
+
+    <details class="notes">
+      <summary data-i18n="notesTitle">Что важно знать</summary>
+      <div class="notes-body">
+        <ul class="notes-list">
+          <li>
+            <strong data-i18n="noteLocalTitle">Только на этом устройстве</strong>
+            <span data-i18n="noteLocal">Сайт читает файл в памяти браузера. Здесь нет серверной обработки, аналитики и сторонних запросов; фотография не загружается и не сохраняется сайтом.</span>
+          </li>
+          <li>
+            <strong data-i18n="noteCounterTitle">Это общий счётчик кадров</strong>
+            <span data-i18n="noteCounter">Значение берётся из метаданных на момент съёмки. Оно включает электронный и EFCS-затвор, поэтому не равно износу механического затвора.</span>
+          </li>
+          <li>
+            <strong data-i18n="noteOriginalTitle">Нужен оригинальный файл</strong>
+            <span data-i18n="noteOriginal">Блок CameraInfo сохраняется в JPEG или CR3 прямо с камеры. Мессенджеры, редакторы, облачные конвертеры и соцсети часто удаляют его.</span>
+          </li>
+          <li>
+            <strong data-i18n="noteCompositeTitle">Composite-кадры</strong>
+            <span data-i18n="noteComposite">Панорамы и focus stacking могут хранить 0, 65535, 4294967295 или другой размер блока. Для оценки смотрите ближайший обычный кадр.</span>
+          </li>
+          <li>
+            <strong data-i18n="noteR100Title">R100 — предварительно</strong>
+            <span data-i18n="noteR100">Счётчик по кадрам подтверждён, но сохранение после форматирования и сброса нумерации ещё не проверено на достаточном числе файлов.</span>
+          </li>
+          <li>
+            <strong data-i18n="noteWidthTitle">Четыре байта</strong>
+            <span data-i18n="noteWidth">Поле читается как 32-битное little-endian. На всех проверенных реальных файлах значение было ниже 65536, поэтому старшие байты пока не подтверждены файлом с большим значением.</span>
+          </li>
+        </ul>
+
+        <div class="table-wrap">
+          <table>
+            <caption data-i18n="tableCaption">Поддерживаемые модели</caption>
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="thModel">Модель</th>
+                <th scope="col" data-i18n="thFormat">Форматы</th>
+                <th scope="col" data-i18n="thStatus">Статус</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>EOS R7</td>
+                <td>JPEG · CR3</td>
+                <td><span class="status-cell"><span class="status-dot verified" aria-hidden="true"></span><span data-i18n="tableR7Status">Проверено</span></span></td>
+              </tr>
+              <tr>
+                <td>EOS R10</td>
+                <td>JPEG · CR3</td>
+                <td><span class="status-cell"><span class="status-dot verified" aria-hidden="true"></span><span data-i18n="tableR10Status">Проверено</span></span></td>
+              </tr>
+              <tr>
+                <td>EOS R100</td>
+                <td>JPEG · CR3</td>
+                <td><span class="status-cell"><span class="status-dot preliminary" aria-hidden="true"></span><span data-i18n="tableR100Status">Предварительно</span></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-links">
+      <a href="https://github.com/4eloveek/canon-r-shutter-checker" data-i18n="footerRepo">Исходники и CLI</a>
+      <a href="https://github.com/4eloveek/canon-r-shutter-checker/blob/main/docs/FORMAT.md" data-i18n="footerFormat">Формат CameraInfo</a>
+    </div>
+    <p class="footer-meta"><span data-i18n="footerLicense">MIT</span> · <span data-i18n="footerVersion">Версия 2.0</span> · <span data-i18n="footerDisclaimer">Не связан с Canon.</span></p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">Для проверки нужен JavaScript. Файлы обрабатываются только в браузере. / JavaScript is required; files are parsed only in your browser.</p>
+  </noscript>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

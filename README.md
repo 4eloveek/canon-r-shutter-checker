@@ -8,8 +8,37 @@
 ## English
 
 Read the total frame/shutter counter from original Canon camera files without
-connecting the camera. The tool uses ExifTool only to locate Canon's CameraInfo
-metadata block, then validates and reads the model-specific field directly.
+connecting the camera. The Python CLI uses ExifTool only to locate Canon's
+CameraInfo metadata block, then validates and reads the model-specific field
+directly.
+
+### Browser version
+
+`docs/index.html` is a static, dependency-free GitHub Pages build of the same
+reader. It reads original JPEG and CR3 files with the File API and `DataView`
+entirely in the browser. It does not decode the image, upload the file, call a
+server or require Python/ExifTool on the client.
+
+The project-page base path is `/canon-r-shutter-checker/`. Asset URLs are
+relative, so the page does not depend on the repository root. To preview it
+locally:
+
+```bash
+python3 -m http.server 8000 --directory docs
+# open http://localhost:8000/
+```
+
+ES modules do not load from `file://` in current browsers, so use a local HTTP
+server as shown above.
+
+The intended public URL is
+`https://4eloveek.github.io/canon-r-shutter-checker/`. Publishing requires
+enabling **Settings → Pages → Deploy from a branch → `main` / `/docs`** once.
+This repository does not claim that the site is already live.
+
+There is no build step and no runtime dependency. Node.js 20+ is needed only
+for the browser-reader tests; it is not required to use the page. `package.json`
+only defines the test command.
 
 ### Supported models and evidence
 
@@ -297,13 +326,15 @@ three RAW files.
 - The value belongs to the moment the file was captured. Use the newest file
   or take a new frame for the current value.
 - Only original, unmodified files from the camera are supported.
-- Video files and multi-frame RAW bursts are outside this CLI's scope.
-- Parsing depends on ExifTool's verbose output format.
+- Video files and multi-frame RAW bursts are not supported by either reader.
+- The Python CLI depends on ExifTool's verbose output format; the browser
+  reader has its own parser.
 
 ### Tests
 
 ```bash
 python3 -m unittest discover -s tests -v
+npm run test:web
 ```
 
 Tests cover model-specific offsets and layouts, unknown-firmware acceptance,
@@ -311,10 +342,22 @@ status assignment, values above 16-bit range, conflicting blocks, ExifTool
 failures, special-mode sentinels and rejection of unsupported
 models/formats/layouts.
 
+The browser tests build synthetic JPEG/CR3 containers and cover both TIFF byte
+orders, `stco`/`co64`, extended `mdat`, variable `stsz`, multi-frame
+rejection, panorama blocks, sentinels and the R100 offset. They use no real
+photos or personal metadata.
+
+The browser parser was also cross-checked against the CLI on 42 real JPEG/CR3
+samples across all three models. Model, firmware, format, counter and status
+matched in every successful read.
+
 ### Privacy
 
-Everything runs locally. The script reads files and prints results; it does
-not upload anything.
+Everything runs locally. The CLI reads files and prints results; the browser
+build reads a selected file into browser memory and does not upload it. Neither
+version sends photos or metadata to a server. The page has no analytics or
+third-party requests, although the browser itself may keep its own temporary
+copies or cache according to its settings.
 
 ### Acknowledgements
 
@@ -342,8 +385,37 @@ Not affiliated with Canon.
 ## Русский
 
 Читает общий счётчик кадров/затвора из оригинальных файлов Canon без
-подключения камеры. ExifTool используется только для поиска блока метаданных
-CameraInfo; затем скрипт проверяет структуру и читает поле конкретной модели.
+подключения камеры. Python CLI использует ExifTool только для поиска блока
+метаданных CameraInfo; затем скрипт проверяет структуру и читает поле
+конкретной модели.
+
+### Браузерная версия
+
+`docs/index.html` — статическая сборка для GitHub Pages без зависимостей. Она
+читает оригинальные JPEG и CR3 через File API и `DataView` целиком в браузере:
+не декодирует изображение, не загружает файл, не обращается к серверу и не
+требует Python/ExifTool на клиенте.
+
+Базовый путь проект-страницы — `/canon-r-shutter-checker/`. Ссылки на ресурсы
+относительные, поэтому страница не зависит от корня репозитория. Локальный
+просмотр:
+
+```bash
+python3 -m http.server 8000 --directory docs
+# открыть http://localhost:8000/
+```
+
+ES-модули не загружаются через `file://` в текущих браузерах, поэтому
+используйте локальный HTTP-сервер, как показано выше.
+
+Предполагаемый публичный адрес:
+`https://4eloveek.github.io/canon-r-shutter-checker/`. Для публикации нужно
+один раз включить **Settings → Pages → Deploy from a branch → `main` / `/docs`**.
+Репозиторий не утверждает, что сайт уже опубликован.
+
+Сборка не нужна, runtime-зависимостей нет. Node.js 20+ требуется только для
+тестов браузерного парсера, но не для использования страницы. `package.json`
+определяет только команду тестов.
 
 ### Поддерживаемые модели и доказательства
 
@@ -630,13 +702,15 @@ EXIF и была корректно отклонена.
 - Значение относится к моменту съёмки файла. Для текущего значения используйте
   самый свежий файл или снимите новый кадр.
 - Поддерживаются только оригинальные, неизменённые файлы с камеры.
-- Видеофайлы и многокадровые RAW burst не входят в область этого CLI.
-- Разбор зависит от формата подробного вывода ExifTool.
+- Видеофайлы и многокадровые RAW burst не поддерживаются ни одним из вариантов.
+- Python CLI зависит от формата подробного вывода ExifTool; у браузерной версии
+  собственный парсер.
 
 ### Тесты
 
 ```bash
 python3 -m unittest discover -s tests -v
+npm run test:web
 ```
 
 Тесты проверяют модельные смещения и раскладки, принятие неизвестной прошивки,
@@ -644,10 +718,22 @@ python3 -m unittest discover -s tests -v
 ExifTool, маркеры специальных режимов и отклонение неподдерживаемых
 моделей/форматов/раскладок.
 
+Браузерные тесты собирают синтетические контейнеры JPEG/CR3 и покрывают оба
+порядка байт TIFF, `stco`/`co64`, расширенный `mdat`, переменный `stsz`,
+отклонение многокадровых файлов, панорамные блоки, маркеры и смещение R100. Они
+не используют реальные фотографии или личные метаданные.
+
+Браузерный парсер дополнительно сверен с CLI на 42 реальных файлах JPEG/CR3
+всех трёх моделей. Модель, прошивка, формат, счётчик и статус совпали во всех
+успешно прочитанных файлах.
+
 ### Приватность
 
-Всё выполняется локально. Скрипт читает файлы и выводит результат, ничего не
-загружая в сеть.
+Всё выполняется локально. CLI читает файлы и выводит результат; браузерная
+версия читает выбранный файл в память браузера и не загружает его. Ни одна
+версия не отправляет фотографии или метаданные на сервер. На странице нет
+аналитики и сторонних запросов; сам браузер может хранить свои временные копии
+или кэш согласно его настройкам.
 
 ### Благодарности
 
