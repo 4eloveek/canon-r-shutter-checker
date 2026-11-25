@@ -31,14 +31,7 @@ python3 -m http.server 8000 --directory docs
 ES modules do not load from `file://` in current browsers, so use a local HTTP
 server as shown above.
 
-The intended public URL is
-`https://4eloveek.github.io/canon-r-shutter-checker/`. Publishing requires
-enabling **Settings → Pages → Deploy from a branch → `main` / `/docs`** once.
-This repository does not claim that the site is already live.
-
-There is no build step and no runtime dependency. Node.js 20+ is needed only
-for the browser-reader tests; it is not required to use the page. `package.json`
-only defines the test command.
+The utility has a browser-based version. It can be found at - `https://4eloveek.github.io/canon-r-shutter-checker/`
 
 ### Supported models and evidence
 
@@ -408,14 +401,7 @@ python3 -m http.server 8000 --directory docs
 ES-модули не загружаются через `file://` в текущих браузерах, поэтому
 используйте локальный HTTP-сервер, как показано выше.
 
-Предполагаемый публичный адрес:
-`https://4eloveek.github.io/canon-r-shutter-checker/`. Для публикации нужно
-один раз включить **Settings → Pages → Deploy from a branch → `main` / `/docs`**.
-Репозиторий не утверждает, что сайт уже опубликован.
-
-Сборка не нужна, runtime-зависимостей нет. Node.js 20+ требуется только для
-тестов браузерного парсера, но не для использования страницы. `package.json`
-определяет только команду тестов.
+У утилиты есть браузерная версия. Она находится по адресу - `https://4eloveek.github.io/canon-r-shutter-checker/`
 
 ### Поддерживаемые модели и доказательства
 
